@@ -39,7 +39,7 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
 
     TextView headers;
     TextView body;
-    WebView webView;
+    TouchyWebView webView;
 
     private int type;
     private HttpTransaction transaction;
