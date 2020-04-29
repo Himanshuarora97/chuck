@@ -46,6 +46,7 @@ import com.readystatesoftware.chuck.internal.support.SimpleOnPageChangedListener
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.readystatesoftware.chuck.internal.ui.TransactionPayloadFragment.TYPE_ERROR;
 import static com.readystatesoftware.chuck.internal.ui.TransactionPayloadFragment.TYPE_REQUEST;
 import static com.readystatesoftware.chuck.internal.ui.TransactionPayloadFragment.TYPE_RESPONSE;
 
@@ -151,6 +152,10 @@ public class TransactionActivity extends BaseChuckActivity implements LoaderMana
         adapter.addFragment(new TransactionOverviewFragment(), getString(R.string.chuck_overview));
         adapter.addFragment(TransactionPayloadFragment.newInstance(TYPE_REQUEST), getString(R.string.chuck_request));
         adapter.addFragment(TransactionPayloadFragment.newInstance(TYPE_RESPONSE), getString(R.string.chuck_response));
+        if (transaction.getResponseCode() == 500) {
+            adapter.addFragment(TransactionPayloadFragment.newInstance(TYPE_ERROR), "Error");
+        }
+
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new SimpleOnPageChangedListener() {
             @Override

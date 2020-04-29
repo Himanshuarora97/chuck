@@ -18,6 +18,7 @@ package com.readystatesoftware.chuck.internal.ui;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.readystatesoftware.chuck.R;
@@ -34,13 +36,14 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
 
     public static final int TYPE_REQUEST = 0;
     public static final int TYPE_RESPONSE = 1;
+    public static final int TYPE_ERROR = 2;
 
     private static final String ARG_TYPE = "type";
 
     TextView headers;
     TextView body;
-    TouchyWebView webView;
-
+    WebView webView;
+    ScrollView scrollView;
     private int type;
     private HttpTransaction transaction;
 
@@ -69,11 +72,10 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
         headers = (TextView) view.findViewById(R.id.headers);
         body = (TextView) view.findViewById(R.id.body);
         webView =  view.findViewById(R.id.webview);
+        scrollView = view.findViewById(R.id.scrollView);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            webView.setNestedScrollingEnabled(true);
+            scrollView.setNestedScrollingEnabled(true);
         }
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setSupportZoom(true);
         return view;
     }
 
@@ -99,6 +101,8 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
                 case TYPE_RESPONSE:
                     setText(transaction.getResponseHeadersString(true),
                             transaction.getFormattedResponseBody(), transaction.responseBodyIsPlainText());
+                case TYPE_ERROR:
+                    setErrorResponse(transaction.getFormattedResponseBody());
                     break;
             }
         }
@@ -107,16 +111,21 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
     private void setText(String headersString, String bodyString, boolean isPlainText) {
         headers.setVisibility((TextUtils.isEmpty(headersString) ? View.GONE : View.VISIBLE));
         headers.setText(Html.fromHtml(headersString));
-        if (type == TYPE_RESPONSE  && transaction.getResponseCode() == 500) {
-            webView.setVisibility(View.VISIBLE);
-            webView.loadData(bodyString, "text/html", "UTF-8");
+        if (!isPlainText) {
+            body.setText(getString(R.string.chuck_body_omitted));
         } else {
-            webView.setVisibility(View.GONE);
-            if (!isPlainText) {
-                body.setText(getString(R.string.chuck_body_omitted));
-            } else {
-                body.setText(bodyString);
-            }
+            body.setText(bodyString);
         }
+    }
+
+    private void setErrorResponse(String errorResponse) {
+        scrollView.setVisibility(View.GONE);
+        webView.setVisibility(View.VISIBLE);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setSupportZoom(true);
+
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.setVisibility(View.VISIBLE);
+        webView.loadData(errorResponse, "text/html", "UTF-8");
     }
 }
