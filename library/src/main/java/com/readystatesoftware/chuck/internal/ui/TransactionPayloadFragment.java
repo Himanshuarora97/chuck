@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.readystatesoftware.chuck.R;
@@ -37,6 +38,7 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
 
     TextView headers;
     TextView body;
+    WebView webView;
 
     private int type;
     private HttpTransaction transaction;
@@ -65,6 +67,7 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
         View view = inflater.inflate(R.layout.chuck_fragment_transaction_payload, container, false);
         headers = (TextView) view.findViewById(R.id.headers);
         body = (TextView) view.findViewById(R.id.body);
+        webView =  view.findViewById(R.id.webview);
         return view;
     }
 
@@ -98,10 +101,16 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
     private void setText(String headersString, String bodyString, boolean isPlainText) {
         headers.setVisibility((TextUtils.isEmpty(headersString) ? View.GONE : View.VISIBLE));
         headers.setText(Html.fromHtml(headersString));
-        if (!isPlainText) {
-            body.setText(getString(R.string.chuck_body_omitted));
+        if (type == TYPE_RESPONSE  && transaction.getResponseCode() == 500) {
+            webView.setVisibility(View.VISIBLE);
+            webView.loadData(bodyString, "text/html", "UTF-8");
         } else {
-            body.setText(bodyString);
+            webView.setVisibility(View.GONE);
+            if (!isPlainText) {
+                body.setText(getString(R.string.chuck_body_omitted));
+            } else {
+                body.setText(bodyString);
+            }
         }
     }
 }
