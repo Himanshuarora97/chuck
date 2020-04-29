@@ -53,12 +53,14 @@ import static com.readystatesoftware.chuck.internal.ui.TransactionPayloadFragmen
 public class TransactionActivity extends BaseChuckActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String ARG_TRANSACTION_ID = "transaction_id";
+    private static final String ARG_IS_ERROR = "is_error";
 
     private static int selectedTabPosition = 0;
 
-    public static void start(Context context, long transactionId) {
+    public static void start(Context context, long transactionId, boolean isError) {
         Intent intent = new Intent(context, TransactionActivity.class);
         intent.putExtra(ARG_TRANSACTION_ID, transactionId);
+        intent.putExtra(ARG_IS_ERROR, isError);
         context.startActivity(intent);
     }
 
@@ -66,6 +68,7 @@ public class TransactionActivity extends BaseChuckActivity implements LoaderMana
     Adapter adapter;
 
     private long transactionId;
+    private boolean isError;
     private HttpTransaction transaction;
 
     @Override
@@ -73,6 +76,8 @@ public class TransactionActivity extends BaseChuckActivity implements LoaderMana
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chuck_activity_transaction);
 
+        transactionId = getIntent().getLongExtra(ARG_TRANSACTION_ID, 0);
+        isError = getIntent().getBooleanExtra(ARG_IS_ERROR, false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         title = (TextView) findViewById(R.id.toolbar_title);
@@ -88,7 +93,6 @@ public class TransactionActivity extends BaseChuckActivity implements LoaderMana
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        transactionId = getIntent().getLongExtra(ARG_TRANSACTION_ID, 0);
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
@@ -152,7 +156,7 @@ public class TransactionActivity extends BaseChuckActivity implements LoaderMana
         adapter.addFragment(new TransactionOverviewFragment(), getString(R.string.chuck_overview));
         adapter.addFragment(TransactionPayloadFragment.newInstance(TYPE_REQUEST), getString(R.string.chuck_request));
         adapter.addFragment(TransactionPayloadFragment.newInstance(TYPE_RESPONSE), getString(R.string.chuck_response));
-        if (transaction.getResponseCode() == 500) {
+        if (isError) {
             adapter.addFragment(TransactionPayloadFragment.newInstance(TYPE_ERROR), "Error");
         }
 

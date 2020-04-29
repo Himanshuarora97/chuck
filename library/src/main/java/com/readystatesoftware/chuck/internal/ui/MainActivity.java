@@ -41,7 +41,7 @@ public class MainActivity extends BaseChuckActivity implements TransactionListFr
 
     @Override
     public void onListFragmentInteraction(HttpTransaction transaction) {
-        TransactionActivity.start(this, transaction.getId());
+        TransactionActivity.start(this, transaction.getId(), transaction.getResponseCode() == 500);
     }
 
     private String getApplicationName() {
