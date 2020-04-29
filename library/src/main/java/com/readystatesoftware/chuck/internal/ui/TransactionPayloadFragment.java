@@ -73,9 +73,7 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
             webView.setNestedScrollingEnabled(true);
         }
         webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setBuiltInZoomControls(true);
         return view;
     }
 
