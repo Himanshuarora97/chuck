@@ -101,6 +101,7 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
                 case TYPE_RESPONSE:
                     setText(transaction.getResponseHeadersString(true),
                             transaction.getFormattedResponseBody(), transaction.responseBodyIsPlainText());
+                    break;
                 case TYPE_ERROR:
                     setErrorResponse(transaction.getFormattedResponseBody());
                     break;
