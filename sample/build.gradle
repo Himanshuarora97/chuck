@@ -26,7 +26,6 @@ android {
 
 dependencies {
     debugCompile project(':library')
-    releaseCompile project(':library-no-op')
     compile "com.android.support:design:26.0.0"
     compile "com.android.support:appcompat-v7:26.0.0"
     compile "com.squareup.okhttp3:logging-interceptor:$okhttp3Version"
