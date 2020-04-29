@@ -141,7 +141,7 @@ public class FormatUtils {
     }
 
     public static String getRequestBodyResponse(HttpTransaction transaction) {
-        String requestBody = "";
+        String requestBody = transaction.getUrl() + "\n";
         List<HttpHeader> headers = transaction.getRequestHeaders();
         for (int i = 0, count = headers.size(); i < count; i++) {
             String name = headers.get(i).getName();
@@ -150,7 +150,9 @@ public class FormatUtils {
                 requestBody += name + ": " + value + "\n";
             }
         }
-        requestBody += " \n\n" + transaction.getFormattedRequestBody();
+        if (transaction.getFormattedRequestBody() != null) {
+            requestBody += " \n" + transaction.getFormattedRequestBody();
+        }
         return requestBody;
     }
 
