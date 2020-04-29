@@ -140,6 +140,22 @@ public class FormatUtils {
         return curlCmd;
     }
 
+    public static String getRequestBodyResponse(HttpTransaction transaction) {
+        String requestBody = "";
+        List<HttpHeader> headers = transaction.getRequestHeaders();
+        for (int i = 0, count = headers.size(); i < count; i++) {
+            String name = headers.get(i).getName();
+            String value = headers.get(i).getValue();
+            if ("app-version".equalsIgnoreCase(name) ||  "access-token".equalsIgnoreCase(name)) {
+                requestBody += name + ": " + value + "\n";
+            }
+        }
+        requestBody += " \n\n" + transaction.getFormattedRequestBody();
+        return requestBody;
+    }
+
+
+
     private static String v(String string) {
         return (string != null) ? string : "";
     }

@@ -112,7 +112,10 @@ public class TransactionActivity extends BaseChuckActivity implements LoaderMana
         } else if (item.getItemId() == R.id.share_curl) {
             share(FormatUtils.getShareCurlCommand(transaction));
             return true;
-        } else {
+        } else if (item.getItemId() == R.id.share_request) {
+            share(FormatUtils.getRequestBodyResponse(transaction));
+            return true;
+        }else {
             return super.onOptionsItemSelected(item);
         }
     }
